@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notes Reminder App</title>
+</head>
+<body>
+
+<h2>Add Note</h2>
+
+<input id="title" placeholder="Title"><br><br>
+<input id="desc" placeholder="Description"><br><br>
+<input id="tags" placeholder="Tags (comma separated)"><br><br>
+<input id="date" type="datetime-local"><br><br>
+
+<select id="priority">
+  <option>Low</option>
+  <option>Medium</option>
+  <option>High</option>
+</select><br><br>
+
+<button onclick="addNote()">Add Note</button>
+
+<hr>
+
+<h2>All Notes</h2>
+<ul id="notesList"></ul>
+
+<script>
+
+// ADD NOTE
+async function addNote() {
+  const note = {
+    title: document.getElementById('title').value,
+    description: document.getElementById('desc').value,
+    tags: document.getElementById('tags').value.split(','),
+    date: document.getElementById('date').value,
+    priority: document.getElementById('priority').value
+  };
+
+  await fetch('http://localhost:3000/add-note', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(note)
+  });
+
+  alert("Note Added!");
+  loadNotes();
+}
+
+// LOAD NOTES
+async function loadNotes() {
+  const res = await fetch('http://localhost:3000/notes');
+  const notes = await res.json();
+
+  const list = document.getElementById('notesList');
+  list.innerHTML = '';
+
+  notes.forEach(note => {
+    const li = document.createElement('li');
+
+    li.innerHTML = `
+      <b>${note.title}</b> - ${note.description}<br>
+      Date: ${note.date}<br>
+      Priority: ${note.priority}
+    `;
+
+    list.appendChild(li);
+  });
+}
+
+// REQUEST PERMISSION
+Notification.requestPermission();
+
+// REMINDER SYSTEM
+setInterval(async () => {
+  const res = await fetch('http://localhost:3000/notes');
+  const notes = await res.json();
+
+  const now = new Date().toISOString().slice(0,16);
+
+  notes.forEach(note => {
+    if (note.date === now) {
+      new Notification("Reminder 🔔", {
+        body: note.title
+      });
+    }
+  });
+
+}, 60000);
+
+// LOAD ON START
+loadNotes();
+
+</script>
+
+</body>
+</html>
