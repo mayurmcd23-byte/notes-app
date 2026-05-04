@@ -19,9 +19,9 @@ pipeline {
             }
         }
 
-        stage('Run Application') {
+        stage('Build Complete') {
             steps {
-                sh 'npm start'
+                echo 'Build successful'
             }
         }
     }
