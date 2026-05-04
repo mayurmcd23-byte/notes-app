@@ -1,31 +1,27 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        PATH = "/usr/local/bin:${env.PATH}"
+    }
 
+    stages {
         stage('Check Node') {
             steps {
-                sh '/usr/local/bin/node -v'
-                sh '/usr/local/bin/npm -v'
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh '/usr/local/bin/npm install'
+                sh 'npm install'
             }
         }
 
         stage('Run Application') {
             steps {
-                sh 'pkill node || true'
-                sh '/usr/local/bin/node server.js &'
-            }
-        }
-
-        stage('Build Complete') {
-            steps {
-                echo 'Pipeline executed successfully!'
+                sh 'npm start'
             }
         }
     }
