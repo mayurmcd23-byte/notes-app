@@ -3,16 +3,23 @@ pipeline {
 
     stages {
 
+        stage('Check Node') {
+            steps {
+                sh '/usr/local/bin/node -v'
+                sh '/usr/local/bin/npm -v'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh '/usr/local/bin/npm install'
             }
         }
 
         stage('Run Application') {
             steps {
                 sh 'pkill node || true'
-                sh 'node server.js &'
+                sh '/usr/local/bin/node server.js &'
             }
         }
 
