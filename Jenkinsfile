@@ -5,32 +5,20 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
-                bat 'npm install'
+                sh 'npm install'
             }
         }
 
         stage('Run Application') {
             steps {
-                echo 'Running application...'
-                bat 'node server.js'
+                sh 'pkill node || true'
+                sh 'node server.js &'
             }
         }
 
-        stage('Build') {
+        stage('Build Complete') {
             steps {
-                echo 'Build stage completed'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying application...'
-                bat '''
-                if exist deploy rmdir /s /q deploy
-                mkdir deploy
-                xcopy * deploy /E /I /Y
-                '''
+                echo 'Pipeline executed successfully!'
             }
         }
     }
